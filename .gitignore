@@ -15,9 +15,7 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
-### Kotlin ###
-.kotlin
+.idea
 
 ### Eclipse ###
 .apt_generated
@@ -43,3 +41,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Custom ###
+.kotlin

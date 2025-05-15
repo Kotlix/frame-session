@@ -1,0 +1,87 @@
+syntax = "proto3";
+package ru.kotlix.frame.session.api;
+
+message ServerPacket {
+  // Основной пакет-контейнер для отдельных пакетов
+  message ServerResponse {
+    // Пакет ответа сервера на пакет клиента
+    enum PacketStatus {
+      // Статус ответа сервера
+      ACK = 0;
+      NACK = 1;
+    }
+
+    PacketStatus packet_status = 1;
+    int64 pid = 2;
+  }
+
+  message SessionBreak {
+    // Пакет для явного разрыва подключения по
+    // причине провала аутентифика
+    enum BreakCause {
+      // Статус пользователя в голосоовм канале
+      TIMED_OUT = 0;
+      WRONG_AUTH = 1;
+      ALREADY_LOGGED = 2;
+      ERROR = 3;
+    }
+
+    BreakCause reason = 1;
+  }
+
+  message VoiceNotify {
+    // Пакет для обновления статуса канала
+    enum VoiceStatus {
+      // Статус пользователя в голосоовм канале
+      JOINED = 0;
+      LEFT = 1;
+    }
+
+    VoiceStatus voice_status = 1;
+    int64 from_channel_id = 2;
+    int64 from_community_id = 3;
+    int64 from_user_id = 4;
+  }
+
+  message MessageNotify {
+    // Пакет для оповещения о сообщении в чате
+    int64 from_chat_id = 1;
+    int64 from_community_id = 2;
+    int64 from_user_id = 3;
+    string content = 4;
+  }
+
+  oneof packet {
+    ServerResponse server_response = 1;
+    SessionBreak session_break = 2;
+    VoiceNotify voice_notify = 3;
+    MessageNotify message_notify = 4;
+  }
+}
+
+message ClientPacket {
+  // Основной пакет-контейнер для отдельных пакетов
+  message AuthenticateRequest {
+    // Пакет для аутентификации
+    string token = 1;
+
+    int64 pid = 2;
+  }
+
+  message MessageNotifyPreferences {
+    // Пакет для аутентификации
+    repeated int64 communityId = 1 [packed=true];
+
+    int64 pid = 2;
+  }
+
+  message Heartbeat {
+    // Пакет для поддержания подключения
+  }
+
+  oneof packet {
+    AuthenticateRequest auth_req = 1;
+    MessageNotifyPreferences message_notify_prefs = 2;
+    Heartbeat heartbeat = 3;
+  }
+}

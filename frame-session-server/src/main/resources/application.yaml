@@ -1,6 +1,3 @@
-spring:
-  liquibase:
-    enabled: false
-
-server:
-  port: 8082
+netty:
+  server:
+    port: 8085
