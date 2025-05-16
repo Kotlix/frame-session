@@ -21,7 +21,7 @@ class KafkaConfig {
     fun consumerFactory(
         kafkaProperties: KafkaProperties,
         kafkaAuthProperties: KafkaAuthProperties,
-    ): ConsumerFactory<String, String> =
+    ): ConsumerFactory<Unit, String> =
         DefaultKafkaConsumerFactory(
             HashMap<String, Any>()
                 .withEntry(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaProperties.bootstrapServers)
@@ -35,9 +35,9 @@ class KafkaConfig {
 
     @Bean
     fun kafkaListenerContainerFactory(
-        consumerFactory: ConsumerFactory<String, String>,
-    ): ConcurrentKafkaListenerContainerFactory<String, String> =
-        ConcurrentKafkaListenerContainerFactory<String, String>().apply {
+        consumerFactory: ConsumerFactory<Unit, String>,
+    ): ConcurrentKafkaListenerContainerFactory<Unit, String> =
+        ConcurrentKafkaListenerContainerFactory<Unit, String>().apply {
             this.consumerFactory = consumerFactory
         }
 

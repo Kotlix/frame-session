@@ -24,5 +24,6 @@ pluginManagement {
     }
 }
 
-include("frame-session-api")
+include("frame-session-api-kafka")
+include("frame-session-api-proto")
 include("frame-session-server")

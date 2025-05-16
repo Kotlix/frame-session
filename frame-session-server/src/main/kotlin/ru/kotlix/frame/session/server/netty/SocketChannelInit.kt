@@ -10,7 +10,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import org.springframework.stereotype.Component
-import ru.kotlix.frame.session.api.SessionContract
+import ru.kotlix.frame.session.api.proto.SessionContract
 
 @Component
 class SocketChannelInit(

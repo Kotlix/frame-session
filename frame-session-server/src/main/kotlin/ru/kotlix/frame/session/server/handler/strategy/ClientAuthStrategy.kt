@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import ru.kotlix.frame.session.api.SessionContract
-import ru.kotlix.frame.session.api.SessionContract.ServerPacket.ServerResponse.PacketStatus
+import ru.kotlix.frame.session.api.proto.SessionContract
+import ru.kotlix.frame.session.api.proto.SessionContract.ServerPacket.ServerResponse.PacketStatus
 import ru.kotlix.frame.session.server.handler.serverResponse
 import ru.kotlix.frame.session.server.handler.sessionBreak
 import ru.kotlix.frame.session.server.service.AuthenticationService

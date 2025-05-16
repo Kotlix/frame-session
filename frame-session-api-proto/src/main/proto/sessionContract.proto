@@ -1,5 +1,5 @@
 syntax = "proto3";
-package ru.kotlix.frame.session.api;
+package ru.kotlix.frame.session.api.proto;
 
 message ServerPacket {
   // Основной пакет-контейнер для отдельных пакетов

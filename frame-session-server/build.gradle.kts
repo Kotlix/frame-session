@@ -1,7 +1,8 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 dependencies {
-    api(project(":frame-session-api"))
+    implementation(project(":frame-session-api-kafka"))
+    implementation(project(":frame-session-api-proto"))
 
     implementation("ru.kotlix:frame-auth-client-starter")
     implementation("ru.kotlix:frame-parties-client-starter")
