@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MessageNotification",
+  "type": "object",
+  "required": [
+    "communityId",
+    "chatId",
+    "senderId",
+    "textContent"
+  ],
+  "properties": {
+    "communityId": {
+      "type": "integer"
+    },
+    "chatId": {
+      "type": "integer"
+    },
+    "senderId": {
+      "type": "integer"
+    },
+    "textContent": {
+      "type": "string"
+    }
+  }
+}

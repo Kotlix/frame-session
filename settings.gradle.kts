@@ -6,12 +6,16 @@ pluginManagement {
         val springBootVersion: String by settings
         val springDependencyManagementVersion: String by settings
         val ktlintVersion: String by settings
+        val protobufVersion: String by settings
+        val js2pojoVersion: String by settings
 
         kotlin("jvm") version jvmPluginVersion
         kotlin("plugin.spring") version jvmPluginVersion
         id("org.springframework.boot") version springBootVersion
         id("io.spring.dependency-management") version springDependencyManagementVersion
         id("org.jlleitschuh.gradle.ktlint") version ktlintVersion
+        id("com.google.protobuf") version protobufVersion
+        id("org.jsonschema2pojo") version js2pojoVersion
     }
 
     repositories {
@@ -21,6 +25,4 @@ pluginManagement {
 }
 
 include("frame-session-api")
-include("frame-session-client")
-include("frame-session-client-starter")
 include("frame-session-server")

@@ -1,19 +1,33 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 dependencies {
     api(project(":frame-session-api"))
-    val frameAuthVersion: String by project
-    implementation("ru.kotlix:frame-auth-client-starter:$frameAuthVersion")
+
+    implementation("ru.kotlix:frame-auth-client-starter")
+    implementation("ru.kotlix:frame-parties-client-starter")
+    implementation("ru.kotlix:frame-state-client-starter")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.netty:netty-all")
 
     implementation("org.springframework:spring-context-support")
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.liquibase:liquibase-core")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     runtimeOnly("org.postgresql:postgresql")
+}
+
+tasks.getByName<BootJar>("bootJar") {
+    enabled = true
+}
+
+tasks.getByName<Jar>("jar") {
+    enabled = false
+}
+
+tasks.withType<PublishToMavenRepository> {
+    enabled = false
 }

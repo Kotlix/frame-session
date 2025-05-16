@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: session
+      auto-offset-reset: latest
+      session-timeout-ms: 5000
+      heartbeat-interval-ms: 2000
+      max-poll-interval-ms: 10000
+  cloud:
+    openfeign:
+      client:
+        config:
+          frame-auth-client:
+            url: http://localhost:8080
+          frame-state-client:
+            url: http://localhost:8082
+          frame-parties-community-client:
+            url: http://localhost:8081
+
+session:
+  kafka:
+    authentication:
+      username: admin
+      password: admin
+  login-timeout: 30000
+  heartbeat-timeout: 300000

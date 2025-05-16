@@ -17,6 +17,8 @@ plugins {
     kotlin("plugin.spring") apply false
     id("org.springframework.boot") apply false
     id("org.jlleitschuh.gradle.ktlint") apply false
+    id("com.google.protobuf") apply false
+    id("org.jsonschema2pojo") apply false
     id("io.spring.dependency-management")
     id("maven-publish")
 }
@@ -31,9 +33,6 @@ subprojects {
         plugin("maven-publish")
     }
 
-    val springBootVersion: String by project
-    val springCloudVersion: String by project
-
     val groupId: String by project
     val versionIdNumber: String by project
     val versionIdStatus: String by project
@@ -44,8 +43,22 @@ subprojects {
 
     dependencyManagement {
         imports {
+            val springBootVersion: String by project
             mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+
+            val springCloudVersion: String by project
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        }
+
+        dependencies {
+            val frameAuthVersion: String by project
+            dependency("ru.kotlix:frame-auth-client-starter:$frameAuthVersion")
+
+            val framePartiesVersion: String by project
+            dependency("ru.kotlix:frame-parties-client-starter:$framePartiesVersion")
+
+            val frameStateVersion: String by project
+            dependency("ru.kotlix:frame-state-client-starter:$frameStateVersion")
         }
     }
 
