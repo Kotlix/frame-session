@@ -6,7 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import ru.kotlix.frame.session.api.SessionContract
+import ru.kotlix.frame.session.api.proto.SessionContract
 import ru.kotlix.frame.session.server.handler.strategy.ClientHandlerStrategy
 import ru.kotlix.frame.session.server.handler.strategy.STRATEGY_STATE_KEY
 import ru.kotlix.frame.session.server.handler.strategy.StrategyChangeReason

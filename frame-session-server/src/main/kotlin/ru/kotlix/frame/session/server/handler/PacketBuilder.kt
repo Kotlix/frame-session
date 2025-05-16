@@ -1,8 +1,8 @@
 package ru.kotlix.frame.session.server.handler
 
-import ru.kotlix.frame.session.api.SessionContract
-import ru.kotlix.frame.session.api.SessionContract.ServerPacket.ServerResponse.PacketStatus
-import ru.kotlix.frame.session.api.SessionContract.ServerPacket.SessionBreak.BreakCause
+import ru.kotlix.frame.session.api.proto.SessionContract
+import ru.kotlix.frame.session.api.proto.SessionContract.ServerPacket.ServerResponse.PacketStatus
+import ru.kotlix.frame.session.api.proto.SessionContract.ServerPacket.SessionBreak.BreakCause
 
 fun serverResponse(
     packetStatus: PacketStatus,

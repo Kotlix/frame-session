@@ -1,27 +1,13 @@
-import org.jsonschema2pojo.InclusionLevel
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 val protobufProtocVersion: String by project
 
 plugins {
     id("com.google.protobuf")
-    id("org.jsonschema2pojo")
 }
 
 dependencies {
     api("com.google.protobuf:protobuf-java:$protobufProtocVersion")
-
-    api("jakarta.validation:jakarta.validation-api")
-    api("com.fasterxml.jackson.core:jackson-databind")
-}
-
-jsonSchema2Pojo {
-    targetPackage = "ru.kotlix.frame.session.api.kafka"
-    useLongIntegers = true
-    setInclusionLevel(InclusionLevel.NON_NULL.name)
-    includeJsr303Annotations = true
-    useJakartaValidation = true
-    useTitleAsClassname = true
 }
 
 protobuf {
@@ -35,10 +21,6 @@ protobuf {
             }
         }
     }
-}
-
-tasks.named("compileJava") {
-    dependsOn("generateProto")
 }
 
 tasks.getByName<BootJar>("bootJar") {
