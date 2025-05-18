@@ -5,45 +5,23 @@ on:
     inputs:
       build_image:
         description: 'Build docker image'
-        required: true
         type: boolean
         default: true
-      spring_profile:
-        description: 'Active spring profile'
-        required: true
-        default: 'prod'
-        type: choice
-        options:
-          - dev
-          - prod
-      app_name:
-        description: 'K8S app name'
-        required: true
-        type: string
-        default: 'frame-session'
-      svc_port:
-        description: 'K8S service port'
-        required: true
-        type: string
-        default: '30085'
-      image_name:
-        description: 'Docker image name'
-        required: true
-        type: string
-        default: 'frame-session'
       image_version:
         description: 'Docker image version'
-        required: true
+        required: false
         type: string
-        default: 'latest'
 env:
   # K8S essential
   KTX_JAR_PATH: ./frame-session-server/build/libs/*.jar
-  KTX_APP_NAME: ${{ inputs.app_name }}
-  KTX_APP_PROFILE: ${{ inputs.spring_profile }}
-  KTX_SVC_PORT: ${{ inputs.svc_port }}
-  KTX_IMAGE_NAME: ${{ inputs.image_name }}
-  KTX_IMAGE_VERSION: ${{ inputs.image_version }}
+  KTX_APP_NAME: 'frame-session'
+  KTX_IMAGE_NAME: 'frame-session'
+  KTX_SVC_PORT: '30085'
+  # K8S secrets
+  KAFKA_ADDRESS: ${{ secrets.KAFKA_ADDRESS }}
+  KAFKA_USER: ${{ secrets.KAFKA_USER }}
+  KAFKA_PASSWORD: ${{ secrets.KAFKA_PASSWORD }}
+  KAFKA_TOPIC: ${{ secrets.KAFKA_TOPIC }}
 
 jobs:
   deploy:
@@ -73,6 +51,17 @@ jobs:
           ./gradlew build
           mv $KTX_JAR_PATH ./docker/app.jar
 
+      - name: Get Docker image version
+        if: ${{ !inputs.image_version }}
+        run: |
+          CURRENT_VERSION=$(minikube kubectl -- get deployment frame-gateway -o=jsonpath='{.spec.template.spec.containers[0].image}' | cut -d ':' -f 2)
+          echo "KTX_IMAGE_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+
+      - name: Set image version
+        if: ${{ inputs.image_version }}
+        run: |
+          echo "KTX_IMAGE_VERSION=${{ inputs.image_version }}" >> $GITHUB_ENV
+
       - name: Build Docker image
         if: ${{ inputs.build_image }}
         run: |
@@ -80,16 +69,14 @@ jobs:
           docker build -t $KTX_IMAGE_NAME:$KTX_IMAGE_VERSION ./docker
 
       - name: Deploy to k8s
-        env:
-          # k8s prod secrets
-          KAFKA_ADDRESS: ${{ secrets.KAFKA_ADDRESS }}
-          KAFKA_USER: ${{ secrets.KAFKA_USER }}
-          KAFKA_PASSWORD: ${{ secrets.KAFKA_PASSWORD }}
-          KAFKA_TOPIC: ${{ secrets.KAFKA_TOPIC }}
         run: |
+          envsubst < ./k8s/configmap.tpl.yaml > ./k8s/configmap.yaml
+          minikube kubectl -- apply -f ./k8s/configmap.yaml
+          KTX_CONFIG_HASH=$(sha256sum ./k8s/configmap.yaml | cut -d ' ' -f 1)
+          
           envsubst < ./k8s/deployment.tpl.yaml > ./k8s/deployment.yaml
           envsubst < ./k8s/service.tpl.yaml > ./k8s/service.yaml
-
+          
           minikube kubectl -- apply -f ./k8s/deployment.yaml
           minikube kubectl -- apply -f ./k8s/service.yaml
 
