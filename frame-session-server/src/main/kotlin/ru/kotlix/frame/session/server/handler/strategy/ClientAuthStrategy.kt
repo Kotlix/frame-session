@@ -44,7 +44,7 @@ class ClientAuthStrategy(
         val awaitingAuth =
             executorService.submit {
                 logger.debug(
-                    "{}={} : authentication awaiting for {}ms.",
+                    "{}={} : awaiting auth for {}ms.",
                     context.name(),
                     context.channel().remoteAddress(),
                     loginTimeout,
@@ -52,7 +52,7 @@ class ClientAuthStrategy(
                 try {
                     Thread.sleep(loginTimeout)
                     logger.info(
-                        "{}={} : authentication timed out.",
+                        "{}={} : awaiting auth timed out.",
                         context.name(),
                         context.channel().remoteAddress(),
                     )
@@ -61,8 +61,8 @@ class ClientAuthStrategy(
                             context.close()
                         }
                 } catch (ignored: InterruptedException) {
-                    logger.info(
-                        "{}={} : authentication passed.",
+                    logger.debug(
+                        "{}={} : awaiting auth interrupted.",
                         context.name(),
                         context.channel().remoteAddress(),
                     )
@@ -86,14 +86,32 @@ class ClientAuthStrategy(
         }
 
         val userInfo =
-            authenticationService.authenticate(authPacket.token)
-                ?: run {
-                    context.writeAndFlush(sessionBreak(SessionContract.ServerPacket.SessionBreak.BreakCause.WRONG_AUTH))
-                        .addListener {
-                            context.close()
-                        }
-                    return
+            try {
+                authenticationService.authenticate(authPacket.token)
+            } catch (ex: RuntimeException) {
+                logger.debug(
+                    "{}={} : authentication failed with an error.",
+                    context.name(),
+                    context.channel().remoteAddress(),
+                )
+                context.writeAndFlush(sessionBreak(SessionContract.ServerPacket.SessionBreak.BreakCause.ERROR))
+                    .addListener {
+                        context.close()
+                    }
+                return
+            }
+        if (userInfo == null) {
+            logger.debug(
+                "{}={} : wrong auth.",
+                context.name(),
+                context.channel().remoteAddress(),
+            )
+            context.writeAndFlush(sessionBreak(SessionContract.ServerPacket.SessionBreak.BreakCause.WRONG_AUTH))
+                .addListener {
+                    context.close()
                 }
+            return
+        }
         if (authState.awaitingAuth.isDone) {
             logger.warn(
                 "{}={} : authentication passed, but timeout happened.",
@@ -127,6 +145,11 @@ class ClientAuthStrategy(
                 return
             }
         if (isOnline) {
+            logger.info(
+                "{}={} : already logged.",
+                context.name(),
+                context.channel().remoteAddress(),
+            )
             context.writeAndFlush(sessionBreak(SessionContract.ServerPacket.SessionBreak.BreakCause.ALREADY_LOGGED))
             return
         }
@@ -134,6 +157,12 @@ class ClientAuthStrategy(
         context.channel().attr(USER_INFO_KEY).set(userInfo)
         switchStrategy(context, servingStrategy, logger)
         context.writeAndFlush(serverResponse(PacketStatus.ACK, authPacket.pid))
+
+        logger.info(
+            "{}={} : authentication passed.",
+            context.name(),
+            context.channel().remoteAddress(),
+        )
     }
 
     override fun onStrategyDisabled(

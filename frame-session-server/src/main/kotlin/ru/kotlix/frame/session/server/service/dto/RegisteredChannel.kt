@@ -5,5 +5,5 @@ import io.netty.channel.Channel
 data class RegisteredChannel(
     val userId: Long,
     val channel: Channel,
-    var awaitsMessagesFromCommunities: List<Long>? = null,
+    var listensCommunities: List<Long>? = null,
 )
