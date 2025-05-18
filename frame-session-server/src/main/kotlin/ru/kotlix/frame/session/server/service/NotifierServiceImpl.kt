@@ -21,7 +21,7 @@ class NotifierServiceImpl(
 
         subscribers.forEach {
             val communities =
-                it.awaitsMessagesFromCommunities
+                it.listensCommunities
                     ?: run {
                         logger.debug("{} not provided awaiting communities.", it.channel.remoteAddress())
                         return@forEach

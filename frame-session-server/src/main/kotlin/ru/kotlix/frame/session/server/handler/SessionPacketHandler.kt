@@ -11,6 +11,7 @@ import ru.kotlix.frame.session.server.handler.strategy.ClientHandlerStrategy
 import ru.kotlix.frame.session.server.handler.strategy.STRATEGY_STATE_KEY
 import ru.kotlix.frame.session.server.handler.strategy.StrategyChangeReason
 import ru.kotlix.frame.session.server.handler.strategy.setStrategy
+import java.net.SocketException
 
 @Component
 @Sharable
@@ -72,6 +73,15 @@ class SessionPacketHandler(
             strategy.onStrategyDisabled(context, StrategyChangeReason.CONNECTION_BROKEN)
         } catch (ex: RuntimeException) {
             logger.error("Error happened during strategy disable", ex)
+        }
+    }
+
+    override fun exceptionCaught(
+        ctx: ChannelHandlerContext?,
+        cause: Throwable?,
+    ) {
+        if (cause is SocketException) {
+            ctx?.channel()?.close()
         }
     }
 }

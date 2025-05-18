@@ -14,9 +14,9 @@ spring:
           frame-auth-client:
             url: http://localhost:8080
           frame-state-client:
-            url: http://localhost:8082
-          frame-parties-community-client:
             url: http://localhost:8081
+          frame-parties-community-client:
+            url: http://localhost:8083
 
 session:
   kafka:

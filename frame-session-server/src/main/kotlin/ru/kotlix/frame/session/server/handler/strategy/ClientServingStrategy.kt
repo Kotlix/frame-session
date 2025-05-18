@@ -110,25 +110,21 @@ class ClientServingStrategy(
         val listensCommunities = prPacket.communityIdList
 
         if (messagePreferencesValidator.canBeNotifiedBy(regChannel.userId, listensCommunities)) {
-            regChannel.awaitsMessagesFromCommunities = listensCommunities
+            regChannel.listensCommunities = listensCommunities
 
             context.writeAndFlush(
                 serverResponse(
                     SessionContract.ServerPacket.ServerResponse.PacketStatus.ACK,
                     prPacket.pid,
                 ),
-            ).addListener {
-                context.close()
-            }
+            )
         } else {
             context.writeAndFlush(
                 serverResponse(
                     SessionContract.ServerPacket.ServerResponse.PacketStatus.NACK,
                     prPacket.pid,
                 ),
-            ).addListener {
-                context.close()
-            }
+            )
         }
     }
 
@@ -145,7 +141,7 @@ class ClientServingStrategy(
         try {
             Thread.sleep(heartbeatTimeout)
             logger.info(
-                "{}={} : heartbeat timed out.",
+                "{}={} : heartbeat awaiting timed out.",
                 context.name(),
                 context.channel().remoteAddress(),
             )
@@ -156,7 +152,7 @@ class ClientServingStrategy(
                 }
         } catch (ignored: InterruptedException) {
             logger.debug(
-                "{}={} : heartbeat passed.",
+                "{}={} : heartbeat awaiting interrupted.",
                 context.name(),
                 context.channel().remoteAddress(),
             )
