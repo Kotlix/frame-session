@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${KTX_APP_NAME}
+spec:
+  selector:
+    app: ${KTX_APP_NAME}
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: ${KTX_SVC_PORT}
+  type: NodePort

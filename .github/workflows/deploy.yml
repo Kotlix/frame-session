@@ -1,98 +1,98 @@
-#name: Deploy on k8s
-#
-#on:
-#  workflow_dispatch:
-#    inputs:
-#      build_image:
-#        description: 'Build docker image'
-#        required: true
-#        type: boolean
-#        default: true
-#      spring_profile:
-#        description: 'Active spring profile'
-#        required: true
-#        default: 'prod'
-#        type: choice
-#        options:
-#          - dev
-#          - prod
-#      app_name:
-#        description: 'K8S app name'
-#        required: true
-#        type: string
-#        default: 'frame-parties'
-#      svc_port:
-#        description: 'K8S service port'
-#        required: true
-#        type: string
-#        default: '30083'
-#      image_name:
-#        description: 'Docker image name'
-#        required: true
-#        type: string
-#        default: 'frame-parties'
-#      image_version:
-#        description: 'Docker image version'
-#        required: true
-#        type: string
-#        default: 'latest'
-#env:
-#  # K8S essential
-#  KTX_JAR_PATH: ./frame-parties-server/build/libs/*.jar
-#  KTX_APP_NAME: ${{ inputs.app_name }}
-#  KTX_APP_PROFILE: ${{ inputs.spring_profile }}
-#  KTX_SVC_PORT: ${{ inputs.svc_port }}
-#  KTX_IMAGE_NAME: ${{ inputs.image_name }}
-#  KTX_IMAGE_VERSION: ${{ inputs.image_version }}
-#
-#jobs:
-#  deploy:
-#    runs-on: self-hosted
-#
-#    steps:
-#      - name: Sync repository
-#        uses: actions/checkout@v4
-#
-#      - name: Set up JDK 17
-#        if: ${{ inputs.build_image }}
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
-#
-#      - name: Make gradlew executable
-#        if: ${{ inputs.build_image }}Z
-#        run: chmod +x ./gradlew
-#
-#      - name: Build with Gradle
-#        if: ${{ inputs.build_image }}
-#        env:
-#          GITHUB_ACTOR: ${{ github.actor }}
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: |
-#          ./gradlew build
-#          mv $KTX_JAR_PATH ./docker/app.jar
-#
-#      - name: Build Docker image
-#        if: ${{ inputs.build_image }}
-#        run: |
-#          eval $(minikube docker-env)
-#          docker build -t $KTX_IMAGE_NAME:$KTX_IMAGE_VERSION ./docker
-#
-#      - name: Deploy to k8s
-#        env:
-#          # k8s prod secrets
-#          DB_ADDRESS: ${{ secrets.DB_ADDRESS }}
-#          DB_NAME: ${{ secrets.DB_NAME }}
-#          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-#          DB_USER: ${{ secrets.DB_USER }}
-#        run: |
-#          envsubst < ./k8s/deployment.tpl.yaml > ./k8s/deployment.yaml
-#          envsubst < ./k8s/service.tpl.yaml > ./k8s/service.yaml
-#
-#          minikube kubectl -- apply -f ./k8s/deployment.yaml
-#          minikube kubectl -- apply -f ./k8s/service.yaml
-#
-#      - name: Clean up workspace
-#        if: always()
-#        run: rm -rf ${{ github.workspace }}/*
+name: Deploy on k8s
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_image:
+        description: 'Build docker image'
+        required: true
+        type: boolean
+        default: true
+      spring_profile:
+        description: 'Active spring profile'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - dev
+          - prod
+      app_name:
+        description: 'K8S app name'
+        required: true
+        type: string
+        default: 'frame-session'
+      svc_port:
+        description: 'K8S service port'
+        required: true
+        type: string
+        default: '30085'
+      image_name:
+        description: 'Docker image name'
+        required: true
+        type: string
+        default: 'frame-session'
+      image_version:
+        description: 'Docker image version'
+        required: true
+        type: string
+        default: 'latest'
+env:
+  # K8S essential
+  KTX_JAR_PATH: ./frame-session-server/build/libs/*.jar
+  KTX_APP_NAME: ${{ inputs.app_name }}
+  KTX_APP_PROFILE: ${{ inputs.spring_profile }}
+  KTX_SVC_PORT: ${{ inputs.svc_port }}
+  KTX_IMAGE_NAME: ${{ inputs.image_name }}
+  KTX_IMAGE_VERSION: ${{ inputs.image_version }}
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Sync repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        if: ${{ inputs.build_image }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable
+        if: ${{ inputs.build_image }}Z
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        if: ${{ inputs.build_image }}
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./gradlew build
+          mv $KTX_JAR_PATH ./docker/app.jar
+
+      - name: Build Docker image
+        if: ${{ inputs.build_image }}
+        run: |
+          eval $(minikube docker-env)
+          docker build -t $KTX_IMAGE_NAME:$KTX_IMAGE_VERSION ./docker
+
+      - name: Deploy to k8s
+        env:
+          # k8s prod secrets
+          KAFKA_ADDRESS: ${{ secrets.KAFKA_ADDRESS }}
+          KAFKA_USER: ${{ secrets.KAFKA_USER }}
+          KAFKA_PASSWORD: ${{ secrets.KAFKA_PASSWORD }}
+          KAFKA_TOPIC: ${{ secrets.KAFKA_TOPIC }}
+        run: |
+          envsubst < ./k8s/deployment.tpl.yaml > ./k8s/deployment.yaml
+          envsubst < ./k8s/service.tpl.yaml > ./k8s/service.yaml
+
+          minikube kubectl -- apply -f ./k8s/deployment.yaml
+          minikube kubectl -- apply -f ./k8s/service.yaml
+
+      - name: Clean up workspace
+        if: always()
+        run: rm -rf ${{ github.workspace }}/*

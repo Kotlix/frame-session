@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${KTX_APP_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${KTX_APP_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${KTX_APP_NAME}
+    spec:
+      containers:
+        - name: ${KTX_APP_NAME}
+          image: ${KTX_IMAGE_NAME}:${KTX_IMAGE_VERSION}
+          imagePullPolicy: Never
+          command: ["java","-Dspring.profiles.active=${KTX_APP_PROFILE}","-jar","/app.jar"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KAFKA_ADDRESS
+              value: ${KAFKA_ADDRESS}
+            - name: KAFKA_USER
+              value: ${KAFKA_USER}
+            - name: KAFKA_PASSWORD
+              value: ${KAFKA_PASSWORD}
+            - name: KAFKA_TOPIC
+              value: ${KAFKA_TOPIC}
