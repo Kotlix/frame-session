@@ -13,13 +13,11 @@ dependencies {
     implementation("io.netty:netty-all")
 
     implementation("org.springframework:spring-context-support")
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.liquibase:liquibase-core")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
-    runtimeOnly("org.postgresql:postgresql")
 }
 
 tasks.getByName<BootJar>("bootJar") {
