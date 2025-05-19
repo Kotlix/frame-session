@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 import ru.kotlix.frame.session.api.proto.SessionContract
 
 @Component
-class SocketChannelInit(
+class SocketPipeline(
     private val clientPacketsHandler: SimpleChannelInboundHandler<SessionContract.ClientPacket>,
 ) : ChannelInitializer<SocketChannel>() {
     override fun initChannel(ch: SocketChannel?) {

@@ -15,7 +15,7 @@ import ru.kotlix.frame.session.server.config.props.NettyProperties
 @Component
 class NettyTcpServer(
     private val nettyProperties: NettyProperties,
-    private val nettyInitializer: SocketChannelInit,
+    private val channelInitializer: SocketPipeline,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -24,14 +24,14 @@ class NettyTcpServer(
     private var serverClosed = false
 
     @EventListener
-    fun contextStartup(event: ContextRefreshedEvent) {
+    fun contextShutdown(event: ContextRefreshedEvent) {
         val bossGroup = NioEventLoopGroup(nettyProperties.bossCount)
         val workerGroup = NioEventLoopGroup(nettyProperties.workerCount)
         val serverBootstrap =
             ServerBootstrap()
                 .group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel::class.java)
-                .childHandler(nettyInitializer)
+                .childHandler(channelInitializer)
                 .option(ChannelOption.SO_BACKLOG, nettyProperties.backlogSO)
         val serverPort = nettyProperties.port
 
@@ -58,7 +58,7 @@ class NettyTcpServer(
     }
 
     @EventListener
-    fun contextStartup(event: ContextClosedEvent) {
+    fun contextShutdown(event: ContextClosedEvent) {
         if (!serverClosed) {
             try {
                 channel.close()
