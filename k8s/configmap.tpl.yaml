@@ -34,7 +34,8 @@ data:
           username: ${KAFKA_USER}
           password: ${KAFKA_PASSWORD}
         consumer:
-          topic: ${KAFKA_TOPIC}
+          message-topic: ${KAFKA_TOPIC_MSG}
+          voices-topic: ${KAFKA_TOPIC_VOC}
       login-timeout: 30000
       heartbeat-timeout: 300000
 

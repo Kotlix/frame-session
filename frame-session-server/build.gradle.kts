@@ -4,6 +4,7 @@ dependencies {
     implementation(project(":frame-session-api-kafka"))
     implementation(project(":frame-session-api-proto"))
 
+    implementation("ru.kotlix:frame-router-api-kafka")
     implementation("ru.kotlix:frame-auth-client-starter")
     implementation("ru.kotlix:frame-parties-client-starter")
     implementation("ru.kotlix:frame-state-client-starter")
